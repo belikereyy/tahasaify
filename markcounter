@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Marks Evaluation System</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    /* ------------------------------------- */
+    /* Base & Typography Styles */
+    /* ------------------------------------- */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 40px;
+      background: #e9ecef;
+      color: #343a40;
+      min-height: 100vh;
+    }
+    h2 {
+      text-align: center;
+      color: #007bff;
+      margin-bottom: 20px;
+    }
+    .container {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      max-width: 550px;
+      margin: 20px auto;
+      text-align: center;
+    }
+    /* Removed .note styles */
+
+    /* ------------------------------------- */
+    /* Input Layout & Styling */
+    /* ------------------------------------- */
+    .marks-group {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+    .mark-section {
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+    }
+    .mark-section h3 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      font-size: 1.1em;
+      font-weight: 600;
+      border-bottom: 2px solid;
+      padding-bottom: 5px;
+      display: inline-block;
+    }
+
+    /* Color Specifics for Sections */
+    #juz-hali-section {
+      background-color: #f0f8ff;
+      border: 1px solid #cce5ff;
+    }
+    #juz-hali-section h3 {
+      color: #007bff;
+      border-bottom-color: #007bff;
+    }
+
+    #murajat-section {
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+    }
+    #murajat-section h3 {
+      color: #28a745;
+      border-bottom-color: #28a745;
+    }
+
+    .inputs {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .input-wrapper {
+        display: flex;
+        align-items: center;
+    }
+    
+    .box {
+      width: 70px;
+      padding: 10px;
+      border: 2px solid #ced4da;
+      border-radius: 8px;
+      font-size: 18px;
+      text-align: center;
+      outline: none;
+      transition: all .2s ease-in-out;
+      font-weight: bold;
+    }
+    .box:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 4px rgba(0,123,255,0.15);
+    }
+
+    /* ------------------------------------- */
+    /* Button & Result Styling */
+    /* ------------------------------------- */
+    #submitBtn {
+      margin-top: 25px;
+      padding: 12px 30px;
+      font-size: 18px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(180deg,#007bff,#0062d6);
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: transform .1s, box-shadow .1s;
+    }
+    #submitBtn:hover { background: #0062d6; }
+    #submitBtn:active { transform: translateY(2px); box-shadow: none; }
+    
+    #result {
+      margin-top: 25px;
+      font-size: 1.1em;
+      font-weight: 700;
+      text-align: center;
+      padding: 15px;
+      border-radius: 10px;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      border: 1px solid transparent;
+    }
+    
+    /* color styles */
+    .red { background: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+    .yellow { background: #fff3cd; color: #856404; border-color: #ffeeba; }
+    .blue { background: #d1ecf1; color: #0c5460; border-color: #bee5eb; }
+    .green { background: #d4edda; color: #155724; border-color: #c3e6cb; }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+        body { padding: 20px; }
+        .container { max-width: 100%; padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Marks Evaluation System</h2>
+    <div class="marks-group">
+
+        <div id="juz-hali-section" class="mark-section">
+            <h3>Juz Hali</h3>
+            <div class="inputs">
+                <div class="input-wrapper">
+                    <input type="number" id="box1" class="box juz-hali" min="1" max="10" step="1" />
+                </div>
+            </div>
+        </div>
+
+        <div id="murajat-section" class="mark-section">
+            <h3>Murajat</h3>
+            <div class="inputs">
+                <div class="input-wrapper"><input type="number" id="box2" class="box murajat" min="1" max="10" step="1" /></div>
+                <div class="input-wrapper"><input type="number" id="box3" class="box murajat" min="1" max="10" step="1" /></div>
+                <div class="input-wrapper"><input type="number" id="box4" class="box murajat" min="1" max="10" step="1" /></div>
+                <div class="input-wrapper"><input type="number" id="box5" class="box murajat" min="1" max="10" step="1" /></div>
+                <div class="input-wrapper"><input type="number" id="box6" class="box murajat" min="1" max="10" step="1" /></div>
+            </div>
+        </div>
+
+    </div>
+
+    <button id="submitBtn" type="button">Calculate Result</button>
+    <div id="result" aria-live="polite"></div>
+  </div>
+
+  <script>
+    'use strict';
+
+    // Helper function to show results
+    function showResult(text, colorClass) {
+      const r = document.getElementById('result');
+      r.classList.remove('red', 'yellow', 'blue', 'green');
+      r.classList.add(colorClass);
+      r.textContent = text;
+    }
+
+    function calculate() {
+      const boxes = document.querySelectorAll('.box');
+      let total = 0;
+      let filled = 0;
+      let juzHaliMark = null;
+
+      for (const el of boxes) {
+        const raw = el.value;
+
+        if (raw !== '') {
+          const n = Number(raw);
+
+          // Validation (ensuring 1-10 range)
+          if (Number.isNaN(n) || n < 1 || n > 10) {
+            showResult('Error: Marks must be valid numbers between 1 and 10.', 'red');
+            return;
+          }
+
+          if (el.id === 'box1') {
+            juzHaliMark = n;
+          }
+
+          total += n;
+          filled++;
+        }
+      }
+
+      if (filled === 0) {
+        showResult('Please enter at least one mark.', 'red');
+        return;
+      }
+
+      // Calculation: (Average Mark out of 10) * 10 = Percentage out of 100
+      let percentage = (total / filled) * 10;
+      percentage = Math.max(0, Math.min(100, percentage));
+      const percentageText = percentage.toFixed(2) + '%';
+      
+      let remark = '';
+      let colorClass = '';
+      
+      // 🛑 CRITICAL CHECK: Juz Hali Mark 1 (box1) must be 6 or higher
+      if (juzHaliMark !== null && juzHaliMark < 6) {
+         // Display percentage AND the critical remark
+         const text = `Percentage: ${percentageText} — Remark: Hifz Mazbut Karo (Juz Hali too low: ${juzHaliMark})`;
+         showResult(text, 'red');
+         return;
+      }
+
+      // Conditional Logic (Range checks for standard evaluation)
+      if (percentage >= 87) { 
+        remark = '3 Pages';
+        colorClass = 'green';
+      } else if (percentage >= 77) { 
+        remark = '2 Pages';
+        colorClass = 'blue';
+      } else if (percentage >= 70) { 
+        remark = '1 Page';
+        colorClass = 'yellow';
+      } else { 
+        remark = 'Hifz Mazbut Karo';
+        colorClass = 'red';
+      }
+
+      // Standard result output
+      const text = `Percentage: ${percentageText} — Remark: ${remark}`;
+      showResult(text, colorClass);
+    }
+
+    // Wire button after DOM ready
+    document.addEventListener('DOMContentLoaded', function () {
+      document.getElementById('submitBtn').addEventListener('click', calculate);
+    });
+  </script>
+</body>
+</html>
