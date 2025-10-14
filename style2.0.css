@@ -1,0 +1,35 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+​
+:root{
+    --accent: #0b72f2;
+    --green-border: #2ea558;
+    --green: #e6f6e9;
+    --blue-main: #0056b3;
+    --yellow-main: #a18a00;
+    --red-main: #a12f36;
+    --default-border: #e6e9ee;
+}
+​
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f4f6f9;
+    color: #333;
+    line-height: 1.6;
+}
+​
+/* Page Layout */
+.page {
+    padding: 20px 10px;
+    display: flex;
+    justify-content: center;
+}
+​
+.card-wrapper {
+    width: 100%;
+    max-width: 500px;
+}
+​
