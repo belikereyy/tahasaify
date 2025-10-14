@@ -1,0 +1,316 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root{
+    --accent: #0b72f2;
+    --green-border: #2ea558;
+    --green: #e6f6e9;
+    --blue-main: #0056b3;
+    --yellow-main: #a18a00;
+    --red-main: #a12f36;
+    --default-border: #e6e9ee;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f4f6f9;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Page Layout */
+.page {
+    padding: 20px 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.card-wrapper {
+    width: 100%;
+    max-width: 500px;
+}
+
+/* Header/Title Card */
+.title-card {
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    text-align: center;
+}
+
+.title-card h1 {
+    font-size: 1.8rem;
+    color: var(--accent);
+    font-weight: 700;
+}
+
+.title-card .sm {
+    display: block;
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 5px;
+}
+
+/* --- Accordion Styles --- */
+
+.eval-card details {
+    border: 1px solid var(--default-border);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    background: #fff;
+    transition: border-color 0.3s, background-color 0.3s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.eval-card summary {
+    display: block;
+    padding: 14px;
+    cursor: pointer;
+    font-weight: 600;
+    list-style: none;
+    position: relative;
+    border-radius: 12px;
+    transition: background-color 0.2s;
+}
+
+/* Custom Accordion Indicator (+/-) */
+.eval-card summary::before {
+    content: '+';
+    position: absolute;
+    right: 14px;
+    font-size: 1.3rem;
+    line-height: 1;
+    transition: transform 0.2s;
+    color: var(--accent);
+    font-weight: 300;
+}
+.eval-card details[open] summary::before {
+    content: '-';
+}
+
+.eval-card-content {
+    padding: 0 14px 14px;
+    border-top: 1px solid #e6e9ee;
+}
+
+/* --- Dynamic Mark Colors (Summary & Details) --- */
+
+.eval-card.mark-green details { border-color: var(--green-border); background: var(--green); }
+.eval-card.mark-green summary { color: var(--green-border); background: rgba(46, 165, 88, 0.1); }
+
+.eval-card.mark-blue details { border-color: var(--blue-main); background: #e0f2ff; }
+.eval-card.mark-blue summary { color: var(--blue-main); background: rgba(0, 86, 179, 0.1); }
+
+.eval-card.mark-yellow details { border-color: var(--yellow-main); background: #fff8e1; }
+.eval-card.mark-yellow summary { color: var(--yellow-main); background: rgba(161, 138, 0, 0.1); }
+
+.eval-card.mark-red details { border-color: var(--red-main); background: #fde5e7; }
+.eval-card.mark-red summary { color: var(--red-main); background: rgba(161, 47, 54, 0.1); }
+
+/* Juz Hali Base Style (Default green for Juz Hali) */
+.juz-hali details {
+    background: var(--green);
+    border: 2px solid var(--green-border);
+}
+.juz-hali summary {
+    color: var(--green-border);
+    font-weight: 700;
+    background: rgba(46, 165, 88, 0.1);
+}
+
+/* --- Form Row Layout --- */
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px dashed #eee;
+}
+
+.row:last-of-type {
+    border-bottom: none;
+}
+
+.label-col {
+    font-weight: 500;
+    color: #495057;
+    flex-grow: 1;
+    padding-right: 10px;
+}
+
+/* --- Juz Select & Pages Select Input --- */
+
+.input-label {
+    display: block;
+    padding: 10px 0;
+    border-bottom: 1px dashed #eee;
+    margin-bottom: 5px;
+}
+
+.label-text {
+    display: block;
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 5px;
+}
+
+.full-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    background-color: #fff;
+    cursor: pointer;
+    appearance: none; /* Removes default dropdown arrow */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 18px;
+}
+
+
+/* --- Counter Controls --- */
+
+.controls-col {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.ctr-btn {
+    background-color: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 50%; /* Circle buttons */
+    width: 30px;
+    height: 30px;
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    flex-shrink: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ctr-btn:hover {
+    background-color: #085cc4;
+}
+
+.ctr-value {
+    width: 50px;
+    height: 34px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin: 0 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    flex-shrink: 0;
+    padding: 0 4px;
+    -moz-appearance: textfield; /* Remove number arrows in Firefox */
+}
+.ctr-value::-webkit-inner-spin-button, 
+.ctr-value::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+}
+
+/* --- Total Mark Display --- */
+
+.total-row {
+    margin-top: 10px;
+    padding-top: 15px;
+    border-top: 2px solid #ddd;
+    border-bottom: none;
+    align-items: center; /* Center the label and the value */
+}
+
+.total-row .small {
+    font-size: 1rem;
+    color: #333;
+    font-weight: 600;
+}
+
+.total-value {
+    width: 80px;
+    padding: 8px 5px;
+    text-align: center;
+    border: 2px solid #d6dbe3;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #333;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Dynamic highlight for total mark display */
+.eval-card.mark-green .total-value { border-color: var(--green-border); color: var(--green-border); background-color: #fff; }
+.eval-card.mark-blue .total-value { border-color: var(--blue-main); color: var(--blue-main); background-color: #fff; }
+.eval-card.mark-yellow .total-value { border-color: var(--yellow-main); color: var(--yellow-main); background-color: #fff; }
+.eval-card.mark-red .total-value { border-color: var(--red-main); color: var(--red-main); background-color: #fff; }
+
+
+/* --- Action Area and Buttons --- */
+
+.action-area {
+    text-align: center;
+    padding: 10px 0 20px;
+}
+
+.btn-calc, .btn-share {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-calc {
+    background-color: var(--accent);
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.btn-calc:hover {
+    background-color: #085cc4;
+}
+
+.btn-share {
+    background-color: #25d366; /* WhatsApp Green */
+    color: #fff;
+}
+
+.btn-share:hover {
+    background-color: #128c7e;
+}
+
+
+/* --- Result Display (Message Box) --- */
+
+#result-display {
+  text-align: center;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 15px;
+  font-weight: 700;
+  min-height: 40px;
+  display: none; 
+  line-height: 1.4;
+  border: 1px solid transparent;
+}
+.result-red { background: #fde5e7; color: var(--red-main); border-color: #f9c7cb; }
+.result-yellow { background: #fff8e1; color: var(--yellow-main); border-color: #ffe99b; }
+.result-blue { background: #e0f2ff; color: var(--blue-main); border-color: #b3d9ff; }
+.result-green { background: #e6f6e9; color: var(--green-border); border-color: #c3e6cb; }
