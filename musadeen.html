@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Person Tracker & Time Calculator</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 16px;
+            background-color: #f0f4f8;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #1e40af;
+            margin-top: 10px;
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+        
+        #nav-toggle {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+            margin-bottom: 25px;
+            padding: 8px;
+            background-color: #e5e7eb;
+            border-radius: 10px;
+        }
+
+        .nav-btn {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background-color: transparent;
+            color: #374151;
+        }
+
+        .nav-btn.active {
+            background-color: #1e40af;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4b5563;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input[type="time"],
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="time"]:focus,
+        input[type="text"]:focus {
+            border-color: #3b82f6;
+            outline: none;
+        }
+
+        #calculator-content {
+            padding: 10px;
+        }
+        
+        #calculator-result {
+            background-color: #eff6ff;
+            color: #1e40af;
+            font-weight: 700;
+            text-align: center;
+            border: 2px dashed #bfdbfe;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1.2em;
+        }
+        
+        #person-selectors {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); 
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+
+        .name-button {
+            padding: 8px 6px; 
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 8px;
+            border: 2px solid #a8b5c9;
+            background-color: #e5e7eb;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            touch-action: manipulation; 
+            line-height: 1.2; 
+        }
+
+        .name-button.active {
+            background-color: #1e40af; 
+            color: white;
+            border-color: #1e40af;
+            box-shadow: 0 0 0 3px #bfdbfe;
+        }
+
+        #calendar-section, #tracking-form-area, #share-today-section {
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: opacity 0.5s, max-height 0.5s ease-in-out;
+        }
+        #calendar-section.active, #tracking-form-area.active, #share-today-section.active {
+            opacity: 1;
+            max-height: 1000px; 
+            margin-top: 20px;
+        }
+
+        .calendar-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 8px 0;
+            font-size: 18px;
+            font-weight: bold;
+            color: #374151;
+        }
+
+        .nav-button {
+            padding: 8px 16px;
+            border: none;
+            background-color: #e0f2f1;
+            color: #0d9488;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            min-width: 80px;
+        }
+
+        #calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            background-color: #e5e7eb;
+            padding: 2px;
+            border-radius: 6px;
+        }
+
+        .day-header {
+            text-align: center;
+            font-size: 12px;
+            color: #1e40af;
+            padding: 8px 0;
+            font-weight: 600;
+        }
+
+        .day-cell {
+            min-height: 50px; 
+            background-color: white;
+            border-radius: 4px;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 16px;
+            font-weight: bold; 
+            cursor: pointer;
+            position: relative;
+            user-select: none;
+            touch-action: manipulation;
+        }
+        
+        .day-cell.selected {
+            border: 3px solid #1e40af;
+            padding: 9px 0; 
+        }
+
+        .day-cell.uzur-day {
+            background-color: #fce7f3;
+            border: 2px solid #db2777;
+        }
+        
+        .day-cell.uzur-day.selected {
+            border: 3px solid #9d174d;
+            padding: 9px 0;
+        }
+
+        .day-cell .indicator {
+            position: absolute;
+            bottom: 0px;
+            left: 0;
+            right: 0;
+            font-size: 10px;
+            background-color: #059669;
+            color: white;
+            line-height: 1;
+            padding: 3px 0;
+            border-radius: 0 0 4px 4px;
+        }
+        
+        .share-button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #share-today-btn {
+            background-color: #25d366; 
+            color: white;
+            box-shadow: 0 4px #1c9d4c;
+        }
+        #share-today-btn:active {
+            box-shadow: 0 2px #1c9d4c;
+            transform: translateY(2px);
+        }
+
+        .share-icon {
+            margin-right: 8px;
+            font-size: 20px;
+        }
+        
+        #all-data-footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #a8b5c9;
+            text-align: center;
+        }
+
+        #share-all-btn {
+            background-color: #128c7e; 
+            color: white;
+            box-shadow: 0 4px #0c6b61;
+        }
+        #share-all-btn:active {
+            box-shadow: 0 2px #0c6b61;
+            transform: translateY(2px);
+        }
+        
+        .uzur-checkbox-container {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background-color: #fef2f2;
+            border-radius: 8px;
+            border: 1px solid #fca5a5;
+            margin-top: 15px;
+        }
+        
+        .uzur-checkbox-container input {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        
+        .uzur-checkbox-container label {
+            font-weight: bold;
+            color: #ef4444; 
+            margin-bottom: 0;
+            font-size: 17px;
+            flex-grow: 1;
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Tracker / Calculator</h1>
+        
+        <div id="nav-toggle">
+            <button class="nav-btn active" id="tracker-nav-btn" onclick="window.switchView('tracker')">Person Tracker</button>
+            <button class="nav-btn" id="calculator-nav-btn" onclick="window.switchView('calculator')">Time Calculator</button>
+        </div>
+
+        <div id="tracker-view" class="view">
+            <div id="person-selectors">
+            </div>
+            
+            <p id="person-status" style="text-align: center; color: #4b5563; font-size: 15px;">Select a person to begin tracking.</p>
+
+            <div id="calendar-section">
+                <div class="calendar-nav">
+                    <button onclick="window.changeMonth(-1)" class="nav-button">&lt; Prev</button>
+                    <span id="calendar-title"></span>
+                    <button onclick="window.changeMonth(1)" class="nav-button">Next &gt;</button>
+                </div>
+                
+                <div id="calendar-grid">
+                    <div class="day-header">Sun</div><div class="day-header">Mon</div><div class="day-header">Tue</div><div class="day-header">Wed</div><div class="day-header">Thu</div><div class="day-header">Fri</div><div class="day-header">Sat</div>
+                </div>
+            </div>
+
+            <div id="tracking-form-area">
+                <div id="selected-date-display"></div>
+                
+                <div class="uzur-checkbox-container">
+                    <input type="checkbox" id="uzur-toggle" onchange="window.saveUzur()">
+                    <label for="uzur-toggle">uzur</label>
+                </div>
+                
+                <div class="input-group">
+                    <div>
+                        <label for="entry-time">Entry Time (HH:MM)</label>
+                        <input type="time" id="entry-time" onchange="window.saveTime('entry')">
+                    </div>
+                    <div>
+                        <label for="exit-time">Exit Time (HH:MM)</label>
+                        <input type="time" id="exit-time" onchange="window.saveTime('exit')">
+                    </div>
+                </div>
+            </div>
+            
+            <div id="share-today-section">
+                <button id="share-today-btn" class="share-button" onclick="window.shareTodayData()">
+                    <span class="share-icon">📲</span> Share Today's Entry for <span id="share-person-name" style="margin-left: 5px;">[Person]</span>
+                </button>
+            </div>
+            
+            <div id="all-data-footer">
+                <button id="share-all-btn" class="share-button" onclick="window.shareAllData()">
+                    <span class="share-icon">💾</span> Share ALL Saved Tracking Data
+                </button>
+            </div>
+        </div>
+
+
+        <div id="calculator-view" class="view" style="display: none;">
+            <div id="calculator-content">
+                <p style="text-align: center; color: #4b5563; margin-bottom: 30px;">
+                    Instantly calculate the total time difference in minutes between two times, even across midnight.
+                </p>
+
+                <div class="input-group">
+                    <label for="calcEntryTime">Entry Time (HH:MM)</label>
+                    <input type="time" id="calcEntryTime" oninput="window.calculateDifference()">
+                </div>
+                
+                <div class="input-group">
+                    <label for="calcExitTime">Exit Time (HH:MM)</label>
+                    <input type="time" id="calcExitTime" oninput="window.calculateDifference()">
+                </div>
+                
+                <div class="input-group">
+                    <label for="calcResult">Total Minutes</label>
+                    <input type="text" id="calcResult" value="0 mins" readonly style="padding: 15px;" id="calculator-result">
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const PERSON_NAMES = [
+            'Amatullah ben Taheri', 'Arwa ben Patan', 'Batul ben Rampurawala', 
+            'Jumana bne Rupawala', 'Khadija Ben Lokat', 'Mariyah ben vadhgaon',
+            'Mulla Jumana SaabGilitwala', 'Naqiyah Ben Patanwala', 'Rabab Ben',
+            'Rashida Ben Mamoowala', 'Ruqaiyah ben Surendra Nagar', 'Tasneem ben Sehorewala',
+            'zahra ben malampatti'
+        ];
+        
+        window.selectedPerson = null;
+        window.currentDate = new Date(); 
+        window.currentSelectedDayKey = null; 
+        window.trackerData = {}; 
+
+        window.switchView = (viewName) => {
+            const trackerView = document.getElementById('tracker-view');
+            const calculatorView = document.getElementById('calculator-view');
+            const trackerBtn = document.getElementById('tracker-nav-btn');
+            const calculatorBtn = document.getElementById('calculator-nav-btn');
+
+            if (viewName === 'tracker') {
+                trackerView.style.display = 'block';
+                calculatorView.style.display = 'none';
+                trackerBtn.classList.add('active');
+                calculatorBtn.classList.remove('active');
+            } else if (viewName === 'calculator') {
+                trackerView.style.display = 'none';
+                calculatorView.style.display = 'block';
+                trackerBtn.classList.remove('active');
+                calculatorBtn.classList.add('active');
+            }
+        };
+
+        window.calculateDifference = () => {
+            const entryTimeInput = document.getElementById('calcEntryTime').value;
+            const exitTimeInput = document.getElementById('calcExitTime').value;
+            const resultInput = document.getElementById('calcResult');
+
+            if (entryTimeInput === "" || exitTimeInput === "") {
+                resultInput.value = "0 mins";
+                return;
+            }
+
+            const [entryHour, entryMinute] = entryTimeInput.split(':').map(Number);
+            const [exitHour, exitMinute] = exitTimeInput.split(':').map(Number);
+
+            let totalEntryMinutes = (entryHour * 60) + entryMinute;
+            let totalExitMinutes = (exitHour * 60) + exitMinute;
+
+            let differenceInMinutes;
+
+            if (totalExitMinutes < totalEntryMinutes) {
+                differenceInMinutes = (totalExitMinutes + 1440) - totalEntryMinutes;
+            } else {
+                differenceInMinutes = totalExitMinutes - totalEntryMinutes;
+            }
+
+            resultInput.value = `${differenceInMinutes} mins`;
+        }
+
+        const getPersonData = (person, dateKey) => {
+            if (!window.trackerData[person]) {
+                window.trackerData[person] = {};
+            }
+            return window.trackerData[person][dateKey] || {};
+        };
+        
+        const updatePersonData = (person, dateKey, data) => {
+            if (!window.trackerData[person]) {
+                window.trackerData[person] = {};
+            }
+            
+            if (!data.uzur && !data.entry && !data.exit) {
+                delete window.trackerData[person][dateKey];
+            } else {
+                window.trackerData[person][dateKey] = data;
+            }
+        };
+        
+        const calculateDurationInMinutes = (entryTime, exitTime) => {
+            if (!entryTime || !exitTime) return null;
+
+            const timeToMinutes = (timeStr) => {
+                const parts = timeStr.split(':').map(Number);
+                if (parts.length !== 2 || isNaN(parts[0]) || isNaN(parts[1])) return null;
+                return parts[0] * 60 + parts[1];
+            };
+
+            const entryMinutes = timeToMinutes(entryTime);
+            const exitMinutes = timeToMinutes(exitTime);
+
+            if (entryMinutes === null || exitMinutes === null) return null;
+
+            let duration = exitMinutes - entryMinutes;
+            
+            if (duration < 0) {
+                duration += 24 * 60; 
+            }
+            
+            return duration; 
+        };
+
+
+        window.renderPersonSelectors = () => {
+            const container = document.getElementById('person-selectors');
+            if (!container) return;
+            container.innerHTML = ''; 
+            PERSON_NAMES.forEach(name => {
+                const isActive = name === window.selectedPerson;
+                const button = document.createElement('button');
+                button.textContent = name;
+                button.className = `name-button ${isActive ? 'active' : ''}`;
+                button.onclick = () => window.selectPerson(name);
+                container.appendChild(button);
+            });
+        };
+
+        window.selectPerson = (name) => {
+            if (window.selectedPerson === name) return;
+            
+            window.selectedPerson = name;
+            window.renderPersonSelectors(); 
+            
+            document.getElementById('person-status').textContent = `Now tracking data for: ${name}`;
+
+            document.getElementById('calendar-section').classList.add('active');
+            document.getElementById('tracking-form-area').classList.add('active');
+            document.getElementById('share-today-section').classList.add('active');
+            document.getElementById('share-person-name').textContent = name;
+
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = today.getMonth();
+            const day = today.getDate();
+            const dayDate = new Date(Date.UTC(year, month, day));
+            const dayKey = dayDate.toISOString().split('T')[0];
+
+            window.currentDate = new Date(year, month, 1); 
+            
+            window.renderCalendar();
+            window.handleDateClick(dayDate, dayKey); 
+        };
+
+        window.changeMonth = (delta) => {
+            if (!window.selectedPerson) return;
+            window.currentDate.setMonth(window.currentDate.getMonth() + delta);
+            window.currentSelectedDayKey = null; 
+            window.renderCalendar();
+            
+            document.getElementById('selected-date-display').textContent = 'Select a day on the calendar above.';
+            document.getElementById('uzur-toggle').checked = false;
+            document.getElementById('entry-time').value = '';
+            document.getElementById('exit-time').value = '';
+        };
+
+        window.renderCalendar = () => {
+            if (!window.selectedPerson) return;
+
+            const year = window.currentDate.getFullYear();
+            const month = window.currentDate.getMonth(); 
+
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            document.getElementById('calendar-title').textContent = `${monthNames[month]} ${year}`;
+
+            const firstDayOfMonth = new Date(year, month, 1);
+            const lastDayOfMonth = new Date(year, month + 1, 0);
+            const numDays = lastDayOfMonth.getDate();
+            let startDay = firstDayOfMonth.getDay(); 
+
+            const grid = document.getElementById('calendar-grid');
+            
+            while (grid.children.length > 7) {
+                grid.removeChild(grid.lastChild);
+            }
+
+            for (let i = 0; i < startDay; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.style.backgroundColor = '#f3f4f6';
+                grid.appendChild(emptyCell);
+            }
+
+            for (let day = 1; day <= numDays; day++) {
+                const dayDate = new Date(Date.UTC(year, month, day));
+                const dayKey = dayDate.toISOString().split('T')[0]; 
+                const data = getPersonData(window.selectedPerson, dayKey); 
+
+                const cell = document.createElement('div');
+                cell.className = 'day-cell';
+                cell.textContent = day;
+                
+                if (data.uzur) {
+                    cell.classList.add('uzur-day');
+                }
+                if (dayKey === window.currentSelectedDayKey) {
+                    cell.classList.add('selected');
+                }
+                
+                if (data.entry || data.exit) {
+                    const indicator = document.createElement('div');
+                    indicator.className = 'indicator';
+                    indicator.textContent = 'TIME'; 
+                    cell.appendChild(indicator);
+                }
+
+                cell.onclick = () => window.handleDateClick(dayDate, dayKey);
+                grid.appendChild(cell);
+            }
+        };
+
+        window.handleDateClick = (dayDate, dayKey) => {
+            window.currentSelectedDayKey = dayKey;
+            
+            const data = getPersonData(window.selectedPerson, dayKey);
+            
+            document.getElementById('selected-date-display').innerHTML = `Tracking Data for: 
+                <br>
+                ${dayDate.toDateString()}`; 
+            
+            document.getElementById('uzur-toggle').checked = data.uzur === true;
+            document.getElementById('entry-time').value = data.entry || '';
+            document.getElementById('exit-time').value = data.exit || '';
+            
+            window.renderCalendar();
+        };
+
+        window.saveUzur = () => {
+            if (!window.selectedPerson || !window.currentSelectedDayKey) return;
+            const dayKey = window.currentSelectedDayKey;
+            const isUzur = document.getElementById('uzur-toggle').checked;
+            const currentData = getPersonData(window.selectedPerson, dayKey);
+            
+            const newData = { ...currentData, uzur: isUzur };
+            if (!isUzur) delete newData.uzur; 
+
+            updatePersonData(window.selectedPerson, dayKey, newData);
+            window.renderCalendar(); 
+        };
+
+        window.saveTime = (type) => {
+            if (!window.selectedPerson || !window.currentSelectedDayKey) return;
+            const dayKey = window.currentSelectedDayKey;
+            const value = document.getElementById(`${type}-time`).value;
+            const currentData = getPersonData(window.selectedPerson, dayKey);
+            
+            const newData = { ...currentData, [type]: value };
+            if (!value) {
+                delete newData[type];
+            }
+
+            updatePersonData(window.selectedPerson, dayKey, newData);
+            window.renderCalendar(); 
+        };
+        
+        const formatShareDate = (dateKey) => {
+            const [year, month, day] = dateKey.split('-').map(Number);
+            const date = new Date(Date.UTC(year, month - 1, day));
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        };
+
+        window.shareTodayData = () => {
+            if (!window.selectedPerson) return console.error("No person selected for sharing.");
+
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = today.getMonth();
+            const day = today.getDate();
+            const todayDate = new Date(Date.UTC(year, month, day));
+            const todayKey = todayDate.toISOString().split('T')[0];
+            
+            const data = getPersonData(window.selectedPerson, todayKey);
+            
+            let message = `*Today's Tracking Entry*\n\n`;
+            message += `*Person:* ${window.selectedPerson}\n`;
+            message += `*Date:* ${formatShareDate(todayKey)}\n`;
+
+            if (data.uzur) {
+                message += `*Uzur:* Yes ✅`;
+            } else if (data.entry || data.exit) {
+                const totalMinutes = calculateDurationInMinutes(data.entry, data.exit);
+                const durationText = totalMinutes !== null ? `${totalMinutes} mins` : 'N/A'; 
+                
+                message += `*Uzur:* No ❌\n`;
+                message += `*Entry Time:* ${data.entry || 'N/A'}\n`;
+                message += `*Exit Time:* ${data.exit || 'N/A'}\n`;
+                message += `*Duration:* ${durationText}`; 
+            } else {
+                 message += `*No data recorded for today.*`;
+            }
+
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            try {
+                window.open(whatsappUrl, '_blank');
+            } catch (error) {
+                console.error("Error opening window/sharing:", error);
+            }
+        };
+
+        window.shareAllData = () => {
+            let message = `*All Saved Person Tracking Data*\n\n`;
+            let hasData = false;
+
+            PERSON_NAMES.forEach(person => {
+                const personData = window.trackerData[person];
+                
+                if (personData && Object.keys(personData).length > 0) {
+                    message += `*— ${person} —*\n`;
+                    hasData = true;
+                    
+                    const sortedKeys = Object.keys(personData).sort();
+
+                    sortedKeys.forEach(dateKey => {
+                        const data = personData[dateKey];
+                        const dateString = formatShareDate(dateKey);
+                        
+                        let line = `- ${dateString}: `;
+                        
+                        if (data.uzur) {
+                            line += `Uzur ✅`;
+                        } else if (data.entry || data.exit) {
+                            const totalMinutes = calculateDurationInMinutes(data.entry, data.exit);
+
+                            line += `Entry: ${data.entry || 'N/A'}, Exit: ${data.exit || 'N/A'}`;
+                            
+                            if (totalMinutes !== null) {
+                                line += ` | Duration: ${totalMinutes} mins`;
+                            }
+                        }
+                        
+                        message += line + '\n';
+                    });
+                    message += '\n'; 
+                }
+            });
+            
+            if (!hasData) {
+                message = "There is currently no tracking data saved in the app's memory to share. Please fill out some entries first!";
+            }
+
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            try {
+                window.open(whatsappUrl, '_blank');
+            } catch (error) {
+                console.error("Error opening window/sharing:", error);
+            }
+        };
+
+        window.renderPersonSelectors(); 
+        window.switchView('tracker'); 
+
+    </script>
+</body>
+</html>
+
