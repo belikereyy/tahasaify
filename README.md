@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Musadeen Report & Min's Counter</title>
+
+<style>
+  :root{
+    --bg:#f3f6fb; --card:#fff; --accent:#1e40af; --muted:#6b7280;
+    --success:#059669; --danger:#b91c1c;
+  }
+  *{box-sizing:border-box}
+  body{font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;margin:0;background:var(--bg);padding:18px}
+  .wrap{max-width:820px;margin:0 auto;background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 20px rgba(30,40,80,0.06)}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  h1{font-size:18px;color:var(--accent);margin:0}
+  .tabs{display:flex;gap:8px}
+  .tab{padding:8px 12px;border-radius:8px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-weight:600}
+  .tab.active{background:var(--accent);color:#fff;box-shadow:0 3px rgba(30,40,80,0.08)}
+  .grid{display:grid;gap:12px;margin-top:14px}
+  .cols{display:grid;grid-template-columns:1fr 360px;gap:12px}
+  @media (max-width:880px){.cols{grid-template-columns:1fr}}
+  .card{background:#fbfdff;padding:12px;border-radius:10px;border:1px solid rgba(30,40,80,0.04)}
+  .person-list{display:flex;flex-wrap:wrap;gap:8px}
+  .person{padding:8px 10px;border-radius:8px;background:#eef2ff;border:1px solid rgba(30,40,80,0.04);cursor:pointer;font-size:13px}
+  .person.selected{background:var(--accent);color:#fff;box-shadow:0 4px rgba(30,40,80,0.06)}
+  .calendar{margin-top:8px}
+  .cal-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-weight:700}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+  .day{background:#fff;border-radius:6px;min-height:58px;padding:8px;text-align:center;cursor:pointer;position:relative;border:1px solid rgba(0,0,0,0.03)}
+  .day.empty{background:transparent;border:none;cursor:default}
+  .day.selected{outline:3px solid rgba(30,40,175,0.14)}
+  .tag{position:absolute;bottom:6px;left:6px;right:6px;font-size:11px;padding:3px;border-radius:6px;background:var(--success);color:#fff}
+  .uzur{background:#fff0f6;border:2px solid #fb7185}
+  label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;font-weight:600}
+  input[type="time"], input[type="text"], textarea, select{width:100%;padding:9px;border-radius:8px;border:1px solid #e6edf6;font-size:14px}
+  .row{display:flex;gap:8px}
+  .btn{padding:10px 12px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
+  .btn.primary{background:var(--accent);color:#fff}
+  .btn.wa{background:#25d366;color:#fff}
+  .small{font-size:13px;color:var(--muted)}
+  .footer-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .calculator .result{background:#eef2ff;padding:12px;border-radius:8px;font-weight:700;text-align:center}
+  .uzur-row{display:flex;gap:8px;align-items:center}
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+<header>
+  <h1>Musaedeen Tracker & Min's Counter</h1>
+  <div class="tabs">
+    <button id="tab-tracker" class="tab active">Tracker</button>
+    <button id="tab-calc" class="tab">Calculator</button>
+  </div>
+</header>
+
+<div class="grid">
+
+  <div class="cols" id="tracker-area">
+
+    <div class="card">
+
+      <label>People</label>
+      <div id="personList" class="person-list"></div>
+
+      <p id="status" class="small" style="margin-top:12px">Select a person to start tracking.</p>
+
+      <div class="calendar card" id="calendarCard" style="margin-top:12px;display:none">
+        <div class="cal-title">
+          <div style="display:flex;gap:8px;align-items:center">
+            <button id="prevMonth" class="btn">‹ Prev</button>
+            <div id="calTitle"></div>
+            <button id="nextMonth" class="btn">Next ›</button>
+          </div>
+          
+  
+        </div>
+
+        <div class="cal-grid" id="calGrid"></div>
+      </div>
+
+      <div class="card" id="formCard" style="margin-top:12px;display:none">
+        <div id="selectedInfo" class="small">No date selected.</div>
+
+        <div class="uzur-row" style="margin-top:10px">
+          <input type="checkbox" id="uzurChk">
+          <label for="uzurChk" class="small" style="margin:0">Uzur</label>
+        </div>
+
+        <div style="margin-top:10px">
+          <label>Entry time</label>
+          <input type="time" id="entryTime">
+        </div>
+
+        <div style="margin-top:8px">
+          <label>Exit time</label>
+          <input type="time" id="exitTime">
+        </div>
+
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button id="saveBtn" class="btn primary">Save</button>
+          <button id="clearBtn" class="btn">Clear</button>
+        </div>
+
+        <div class="footer-actions">
+          <button id="shareDayBtn" class="btn wa">Share Today's Entry</button>
+          <button id="shareAllBtn" class="btn">Share All Data</button>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <label>Quick summary</label>
+        <div id="quickSummary" class="small">No person selected.</div>
+      </div>
+
+      <div class="card calculator" style="margin-top:12px">
+        <label>Min's calculator</label>
+        <input type="time" id="calcEntry" style="margin-top:8px">
+        <input type="time" id="calcExit" style="margin-top:8px">
+        <div class="result" id="calcResult" style="margin-top:8px">0 mins</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="onlyCalc" style="display:none">
+    <div class="card">
+      <label>Calculator</label>
+      <input type="time" id="onlyCalcEntry" style="margin-top:8px">
+      <input type="time" id="onlyCalcExit" style="margin-top:8px">
+      <div class="result" id="onlyCalcResult" style="margin-top:8px">0 mins</div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+
+const PERSONS = [
+'Amatullah Taheri','Arwa Patan','Batul Rampurawala','Jumana Rupawala',
+'Khadija Lokat','Mariyah vadhgaon','Jumana Gilitwala','Naqiyah Patanwala',
+'Rabab Ben','Rashida Mamoowala','Ruqaiyah Surendra Nagar','Tasneem Sehorewala',
+'zahra malampatti','Burhanuddin Bagasra','Taher Mandsaur'
+];
+
+
+const googleSheetURL = "https://script.google.com/macros/s/AKfycby7SjVJBO_ZLNBvBtX6hRI0RekbjX3mL7NGX3Pccs_avSS-YZ7BJSuKVvNJYM10O_Wi/exec"; 
+
+const STORAGE_KEY = "personTrackerData_v1";
+let data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+let selectedPerson = null;
+let viewYear, viewMonth;
+let selectedDateKey = null;
+
+function makeDateKey(y,m,d){
+  return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+
+function durationMinutes(entry, exit){
+  if(!entry || !exit) return 0; // Return 0 instead of null for easier calculation
+  const [eh,em] = entry.split(':').map(Number);
+  const [xh,xm] = exit.split(':').map(Number);
+  let e = eh*60+em, x = xh*60+xm;
+  if(x < e) x += 24*60;
+  return x - e;
+}
+
+function saveData(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+
+function renderPersons(){
+  const personList = document.getElementById("personList");
+  personList.innerHTML = "";
+  PERSONS.forEach(name=>{
+    const b = document.createElement("button");
+    b.className = "person" + (selectedPerson === name ? " selected" : "");
+    b.textContent = name;
+    b.onclick = ()=>selectPerson(name);
+    personList.appendChild(b);
+  });
+}
+
+/* SELECT PERSON */
+function selectPerson(name){
+  selectedPerson = name;
+  renderPersons();
+  document.getElementById("status").textContent = `Now tracking: ${name}`;
+  document.getElementById("calendarCard").style.display = "block";
+  document.getElementById("formCard").style.display = "block";
+
+  const now = new Date();
+  viewYear = now.getFullYear();
+  viewMonth = now.getMonth()+1;
+  selectedDateKey = null;
+
+  renderCalendar();
+  renderQuickSummary();
+}
+
+
+function renderCalendar(){
+  const title = document.getElementById("calTitle");
+  title.textContent = new Date(viewYear, viewMonth-1).toLocaleString(undefined,{month:"long",year:"numeric"});
+
+  const grid = document.getElementById("calGrid");
+  grid.innerHTML = "";
+
+  const WEEKDAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  WEEKDAYS.forEach(d=>{
+    let h = document.createElement("div");
+    h.style.textAlign="center"; h.style.fontWeight="700"; h.style.color="#1e40af";
+    h.textContent = d;
+    grid.appendChild(h);
+  });
+
+  const firstDay = new Date(viewYear, viewMonth-1, 1).getDay();
+  const daysInMonth = new Date(viewYear, viewMonth, 0).getDate();
+
+  for(let i=0;i<firstDay;i++){
+    let empty = document.createElement("div");
+    empty.className = "day empty";
+    grid.appendChild(empty);
+  }
+
+  for(let d=1; d<=daysInMonth; d++){
+    let dayEl = document.createElement("div");
+    dayEl.className = "day";
+    dayEl.textContent = d;
+
+    const key = makeDateKey(viewYear, viewMonth, d);
+    const rec = data[selectedPerson] && data[selectedPerson][key];
+
+    if(rec && rec.uzur) dayEl.classList.add("uzur");
+    if(rec && (rec.entry || rec.exit)){
+      let tag = document.createElement("div");
+      tag.className = "tag";
+      tag.textContent = "TIME";
+      dayEl.appendChild(tag);
+    }
+    if(selectedDateKey === key) dayEl.classList.add("selected");
+
+    dayEl.onclick = ()=> selectDate(viewYear, viewMonth, d);
+    grid.appendChild(dayEl);
+  }
+}
+
+/* SELECT DATE */
+function selectDate(y,m,d){
+  selectedDateKey = makeDateKey(y,m,d);
+  const rec = data[selectedPerson] && data[selectedPerson][selectedDateKey] || {};
+
+  document.getElementById("selectedInfo").textContent =
+    new Date(y,m-1,d).toDateString();
+
+  document.getElementById("uzurChk").checked = !!rec.uzur;
+  document.getElementById("entryTime").value = rec.entry || "";
+  document.getElementById("exitTime").value = rec.exit || "";
+
+  renderCalendar();
+}
+
+
+function sendToSheet(payload) {
+  
+ 
+  fetch(googleSheetURL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: JSON.stringify(payload)
+  })
+  .then(() => console.log(`Data sent for ${payload.person} on ${payload.date}`)) // Changed alert to console.log
+  .catch(err => console.error(`Failed to save data to sheet: ${err.message}`));
+}
+
+/* SAVE ENTRY */
+document.getElementById("saveBtn").onclick = ()=>{
+  if(!selectedPerson || !selectedDateKey) return alert("Select a person and date.");
+
+  const uz = document.getElementById("uzurChk").checked;
+  const entry = document.getElementById("entryTime").value;
+  const exit = document.getElementById("exitTime").value;
+  const mins = uz ? 0 : durationMinutes(entry, exit);
+
+  if(!data[selectedPerson]) data[selectedPerson] = {};
+
+  const payload = {};
+  if(uz) payload.uzur = true;
+  if(entry) payload.entry = entry;
+  if(exit) payload.exit = exit;
+
+  if(!payload.uzur && !payload.entry && !payload.exit){
+    // Clear data from local storage if all fields are empty
+    delete data[selectedPerson][selectedDateKey];
+  } else {
+    // Save to local storage
+    data[selectedPerson][selectedDateKey] = payload;
+
+    // Save to Google Sheet
+    sendToSheet({
+      date: selectedDateKey,
+      person: selectedPerson,
+      entry: entry || "",
+      exit: exit || "",
+      minutes: mins,
+      uzur: uz ? "Yes" : ""
+    });
+  }
+
+  saveData();
+  renderCalendar();
+  renderQuickSummary();
+};
+
+
+document.getElementById("clearBtn").onclick = ()=>{
+  if(!selectedPerson || !selectedDateKey) return;
+  
+  // NOTE: Clearing will only remove from local storage. To clear from the sheet, 
+  // you'd need a more complex system. For simplicity, we just clear locally.
+  delete data[selectedPerson][selectedDateKey];
+
+  document.getElementById("uzurChk").checked = false;
+  document.getElementById("entryTime").value = "";
+  document.getElementById("exitTime").value = "";
+
+  saveData();
+  renderCalendar();
+  renderQuickSummary();
+};
+
+/* MONTH NAVIGATION */
+document.getElementById("prevMonth").onclick = ()=>{
+  viewMonth--; if(viewMonth<1){ viewMonth=12; viewYear--; }
+  selectedDateKey = null;
+  document.getElementById("selectedInfo").textContent="No date selected.";
+  renderCalendar();
+};
+
+document.getElementById("nextMonth").onclick = ()=>{
+  viewMonth++; if(viewMonth>12){ viewMonth=1; viewYear++; }
+  selectedDateKey = null;
+  document.getElementById("selectedInfo").textContent="No date selected.";
+  renderCalendar();
+};
+
+
+document.getElementById("shareDayBtn").onclick = ()=>{
+  if(!selectedPerson) return alert("Select a person first.");
+  const t = new Date();
+  const key = makeDateKey(t.getFullYear(), t.getMonth()+1, t.getDate());
+  const rec = data[selectedPerson] && data[selectedPerson][key];
+
+  let msg = `Today's Tracking Entry\nPerson: ${selectedPerson}\nDate: ${t.toLocaleDateString()}\n`;
+
+  if(rec && rec.uzur){
+    msg += "Uzur: Yes ✅";
+  } else if(rec){
+    const mins = durationMinutes(rec.entry, rec.exit);
+    msg += `Entry: ${rec.entry||'N/A'}\nExit: ${rec.exit||'N/A'}\nDuration: ${mins||'0'} mins`;
+  } else {
+    msg += "No data recorded today.";
+  }
+
+  window.open("https://wa.me/?text="+encodeURIComponent(msg));
+};
+
+/* SHARE ALL */
+document.getElementById("shareAllBtn").onclick = ()=>{
+  if(!Object.keys(data).length) return alert("No data saved.");
+
+  let msg = "All Tracking Data\n\n";
+
+  Object.keys(data).forEach(p=>{
+    msg += `— ${p} —\n`;
+    Object.keys(data[p]).sort().forEach(d=>{
+      const rec = data[p][d];
+      if(rec.uzur){
+        msg += `${d}: Uzur\n`;
+      } else {
+        const mins = durationMinutes(rec.entry, rec.exit);
+        msg += `${d}: ${rec.entry||'N/A'} → ${rec.exit||'N/A'} (${m||0}m)\n`;
+      }
+    });
+    msg += "\n";
+  });
+
+  window.open("https://wa.me/?text="+encodeURIComponent(msg));
+};
+
+
+function renderQuickSummary(){
+  if(!selectedPerson){
+    document.getElementById("quickSummary").textContent="No person selected.";
+    return;
+  }
+
+  const rec = data[selectedPerson] || {};
+  const keys = Object.keys(rec).sort().slice(-6).reverse();
+
+  if(!keys.length){
+    document.getElementById("quickSummary").textContent="No records yet.";
+    return;
+  }
+
+  document.getElementById("quickSummary").textContent =
+    keys.map(k=>{
+      const r = rec[k];
+      if(r.uzur) return `${k}: Uzur`;
+      const m = durationMinutes(r.entry, r.exit);
+      return `${k}: ${r.entry||'N/A'} → ${r.exit||'N/A'} (${m||0}m)`;
+    }).join("\n");
+}
+
+
+function setupCalc(entryID, exitID, resultID){
+  const e = document.getElementById(entryID);
+  const x = document.getElementById(exitID);
+  const r = document.getElementById(resultID);
+
+  function calc(){
+    if(!e.value || !x.value){ r.textContent="0 mins"; return; }
+    r.textContent = durationMinutes(e.value, x.value)+" mins";
+  }
+  e.oninput = calc;
+  x.oninput = calc;
+}
+
+setupCalc("calcEntry","calcExit","calcResult");
+setupCalc("onlyCalcEntry","onlyCalcExit","onlyCalcResult");
+
+/* TABS */
+const tabTracker = document.getElementById("tab-tracker");
+const tabCalc = document.getElementById("tab-calc");
+const trackerArea = document.getElementById("tracker-area");
+const onlyCalc = document.getElementById("onlyCalc");
+
+tabTracker.onclick = ()=>{
+  tabTracker.classList.add("active");
+  tabCalc.classList.remove("active");
+  trackerArea.style.display = "";
+  onlyCalc.style.display = "none";
+};
+
+tabCalc.onclick = ()=>{
+  tabCalc.classList.add("active");
+  tabTracker.classList.remove("active");
+  trackerArea.style.display = "none";
+  onlyCalc.style.display = "";
+};
+
+
+renderPersons();
+(function(){
+  let t=new Date();
+  viewYear=t.getFullYear();
+  viewMonth=t.getMonth()+1;
+  renderCalendar();
+})();
+renderQuickSummary();
+
+</script>
+</body>
+</html>
